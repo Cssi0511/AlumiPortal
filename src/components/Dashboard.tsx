@@ -304,17 +304,23 @@ export default function Dashboard({ user, onNavigate }: DashboardProps) {
                                                     {year}
                                                 </h4>
                                                 <div className="space-y-2">
-                                                    {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].map(month => {
-                                                        const amount = yearData?.[month] || 0
-                                                        return (
-                                                            <div key={month} className="flex justify-between items-center text-sm p-2 rounded-lg hover:bg-gray-50 transition-colors">
-                                                                <span className="font-bold text-gray-500 uppercase tracking-wider text-[10px]">{month}</span>
-                                                                <span className={`font-black ${amount > 0 ? 'text-green-600' : 'text-gray-300'}`}>
-                                                                    {amount > 0 ? `₦${amount.toLocaleString()}` : '--'}
-                                                                </span>
-                                                            </div>
-                                                        )
-                                                    })}
+                                                    {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+                                                        .filter(month => (yearData?.[month] || 0) > 0)
+                                                        .map(month => {
+                                                            const amount = yearData?.[month] || 0
+                                                            return (
+                                                                <div key={month} className="flex justify-between items-center text-sm p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                                                                    <span className="font-bold text-gray-500 uppercase tracking-wider text-[10px]">{month}</span>
+                                                                    <span className="font-black text-green-600">
+                                                                        ₦{amount.toLocaleString()}
+                                                                    </span>
+                                                                </div>
+                                                            )
+                                                        })}
+                                                    {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+                                                        .filter(month => (yearData?.[month] || 0) <= 0).length === 12 && (
+                                                            <div className="text-gray-300 text-xs italic p-2">No payments recorded</div>
+                                                        )}
                                                 </div>
                                             </div>
                                         )
