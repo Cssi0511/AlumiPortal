@@ -28,6 +28,25 @@ export interface AlumniMember {
     declaration?: string;
 }
 
+export interface DuesData {
+    found: boolean;
+    memberId: string;
+    fullName: string;
+    totalAmountPaid: number;
+    outstanding: number;
+    monthlyDue: number;
+    totalAssessed: number;
+    paidMonthCount: number;
+    unpaidMonthCount: number;
+    nextDueDate: string;
+    nextDueAmount: number;
+    paidMonths: string[];
+    unpaidMonths: string[];
+    dues2025: Record<string, number>;
+    dues2026: Record<string, number>;
+    dues2027: Record<string, number>;
+}
+
 export const api = {
     async fetchMembers(): Promise<AlumniMember[]> {
         try {
@@ -131,6 +150,22 @@ export const api = {
         } catch (error) {
             console.error('Contact request error:', error);
             return { success: false, message: 'Failed to send message' };
+        }
+    },
+
+    async getDues(memberId: string): Promise<DuesData | null> {
+        try {
+            const params = new URLSearchParams({
+                action: 'getDues',
+                memberId: memberId,
+            });
+            const response = await fetch(`${API_URL}?${params.toString()}`);
+            if (!response.ok) throw new Error('Failed to fetch dues');
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Error fetching dues:', error);
+            return null;
         }
     }
 };
