@@ -45,6 +45,7 @@ export interface DuesData {
     dues2025: Record<string, number>;
     dues2026: Record<string, number>;
     dues2027: Record<string, number>;
+    detail?: string;
 }
 
 export const api = {
@@ -162,6 +163,24 @@ export const api = {
             const response = await fetch(`${API_URL}?${params.toString()}`);
             if (!response.ok) throw new Error('Failed to fetch dues');
             const data = await response.json();
+            if (data && !data.found) {
+                return {
+                    ...data,
+                    totalAmountPaid: 0,
+                    outstanding: 0,
+                    monthlyDue: 0,
+                    totalAssessed: 0,
+                    paidMonthCount: 0,
+                    unpaidMonthCount: 0,
+                    nextDueAmount: 0,
+                    paidMonths: [],
+                    unpaidMonths: [],
+                    dues2025: {},
+                    dues2026: {},
+                    dues2027: {},
+                    detail: 'no current dues set up'
+                };
+            }
             return data;
         } catch (error) {
             console.error('Error fetching dues:', error);

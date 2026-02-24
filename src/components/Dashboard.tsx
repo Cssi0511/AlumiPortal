@@ -48,9 +48,9 @@ export default function Dashboard({ user, onNavigate }: DashboardProps) {
     const yearCount = new Set(members.map((m: AlumniMember) => m.yearOfGraduation).filter(Boolean)).size
 
     const stats = [
-        { label: 'Total Members', value: loading ? '...' : members.length.toLocaleString(), icon: Users, color: 'text-blue-600', bg: 'bg-blue-50' },
-        { label: 'Industries', value: loading ? '...' : industryCount.toString(), icon: Briefcase, color: 'text-amber-600', bg: 'bg-amber-50' },
-        { label: 'Graduation Years', value: loading ? '...' : yearCount.toString(), icon: GraduationCap, color: 'text-red-600', bg: 'bg-red-50' },
+        { label: 'Total Members', value: loading ? '...' : members?.length?.toLocaleString(), icon: Users, color: 'text-blue-600', bg: 'bg-blue-50' },
+        { label: 'Industries', value: loading ? '...' : industryCount?.toString(), icon: Briefcase, color: 'text-amber-600', bg: 'bg-amber-50' },
+        { label: 'Graduation Years', value: loading ? '...' : yearCount?.toString(), icon: GraduationCap, color: 'text-red-600', bg: 'bg-red-50' },
     ]
 
     const getDuesBorderColor = (outstanding: number) => {
@@ -83,10 +83,10 @@ export default function Dashboard({ user, onNavigate }: DashboardProps) {
                                     : 'bg-red-500/10 text-red-700 border-red-200'
                                     }`}
                             >
-                                <div className={`w-2 h-2 rounded-full animate-pulse ${dues.outstanding <= 0 ? 'bg-green-500' : 'bg-red-500'
+                                <div className={`w-2 h-2 rounded-full animate-pulse ${dues?.outstanding <= 0 ? 'bg-green-500' : 'bg-red-500'
                                     }`} />
                                 <span className="text-xs font-black uppercase tracking-widest">
-                                    {dues.outstanding <= 0 ? 'Account Paid Up' : `₦${dues.outstanding.toLocaleString()} Pending`}
+                                    {dues?.outstanding <= 0 ? 'Account Paid Up' : `₦${dues?.outstanding?.toLocaleString()} Pending`}
                                 </span>
                             </motion.div>
                         )}
@@ -210,7 +210,7 @@ export default function Dashboard({ user, onNavigate }: DashboardProps) {
                                     'bg-red-50 text-red-700 border-red-100'
                                 }`}>
                                 <CheckCircle size={14} />
-                                Status: {dues.outstanding > 0 ? `₦${dues.outstanding.toLocaleString()} Outstanding` : 'Up to Date'}
+                                Status: {dues?.outstanding > 0 ? `₦${dues?.outstanding?.toLocaleString()} Outstanding` : 'Up to Date'}
                             </div>
                         )}
                     </div>
@@ -225,12 +225,12 @@ export default function Dashboard({ user, onNavigate }: DashboardProps) {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                         <div className="space-y-1">
                             <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Total Paid</p>
-                            <p className="text-2xl font-black text-[#1e3a8a]">₦{dues.totalAmountPaid.toLocaleString()}</p>
+                            <p className="text-2xl font-black text-[#1e3a8a]">₦{dues?.totalAmountPaid?.toLocaleString()}</p>
                         </div>
                         <div className="space-y-1">
                             <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Outstanding</p>
                             <p className={`text-2xl font-black ${dues.outstanding > 0 ? 'text-red-500' : 'text-green-500'}`}>
-                                ₦{dues.outstanding.toLocaleString()}
+                                ₦{dues?.outstanding?.toLocaleString()}
                             </p>
                         </div>
                         <div className="space-y-1">
@@ -242,13 +242,19 @@ export default function Dashboard({ user, onNavigate }: DashboardProps) {
                         </div>
                         <div className="space-y-1">
                             <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Monthly Commitment</p>
-                            <p className="text-xl font-bold text-gray-700">₦{dues.monthlyDue.toLocaleString()}</p>
+                            <p className="text-xl font-bold text-gray-700">₦{dues?.monthlyDue?.toLocaleString()}</p>
                         </div>
                     </div>
                 ) : (
                     <div className="bg-gray-50 p-6 rounded-2xl flex items-center gap-4 border border-dashed border-gray-200">
                         <AlertCircle className="text-gray-400" />
                         <p className="text-gray-500 text-sm font-medium italic">We couldn't retrieve your dues information at this time. Please contact the administrator if you believe your Member ID is correct.</p>
+                    </div>
+                )}
+
+                {dues && dues.detail && (
+                    <div className="mt-4 bg-amber-50 p-4 rounded-2xl border border-amber-200">
+                        <p className="text-amber-700 text-sm font-medium">{dues.detail}</p>
                     </div>
                 )}
 
@@ -312,7 +318,7 @@ export default function Dashboard({ user, onNavigate }: DashboardProps) {
                                                                 <div key={month} className="flex justify-between items-center text-sm p-2 rounded-lg hover:bg-gray-50 transition-colors">
                                                                     <span className="font-bold text-gray-500 uppercase tracking-wider text-[10px]">{month}</span>
                                                                     <span className="font-black text-green-600">
-                                                                        ₦{amount.toLocaleString()}
+                                                                        ₦{amount?.toLocaleString()}
                                                                     </span>
                                                                 </div>
                                                             )
