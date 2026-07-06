@@ -53,7 +53,7 @@ export interface DuesData {
 export const api = {
     async fetchMembers(): Promise<AlumniMember[]> {
         try {
-            const response = await fetch(`${API_URL}?action=getAllMembers`);
+            const response = await fetch(`${API_URL}?action=getAllMembers&t=${new Date().getTime()}`);
             if (!response.ok) throw new Error('Network response was not ok');
             const data = await response.json();
             return data.success ? data.members : []; // Assuming backend returns { success: true, members: [] }
@@ -65,7 +65,7 @@ export const api = {
 
     async login(email: string): Promise<AlumniMember | null> {
         try {
-            const response = await fetch(`${API_URL}?action=getUser&identifier=${encodeURIComponent(email)}`);
+            const response = await fetch(`${API_URL}?action=getUser&identifier=${encodeURIComponent(email)}&t=${new Date().getTime()}`);
             if (!response.ok) throw new Error('Login failed');
             const data = await response.json();
             console.log('Login Response:', data);
@@ -160,6 +160,7 @@ export const api = {
         try {
             const params = new URLSearchParams({
                 action: 'getDuesStats',
+                t: new Date().getTime().toString()
             });
             const response = await fetch(`${API_URL}?${params.toString()}`);
             if (!response.ok) throw new Error('Failed to fetch dues stats');
@@ -179,6 +180,7 @@ export const api = {
             const params = new URLSearchParams({
                 action: 'getDues',
                 memberId: memberId,
+                t: new Date().getTime().toString()
             });
             const response = await fetch(`${API_URL}?${params.toString()}`);
             if (!response.ok) throw new Error('Failed to fetch dues');
