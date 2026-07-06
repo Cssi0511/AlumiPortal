@@ -279,6 +279,7 @@ export default function Admin({ user }: AdminProps) {
                                 <div className="w-8 h-8 border-2 border-gray-200 border-t-[#1e3a8a] rounded-full animate-spin" />
                             </div>
                         ) : filteredMembers.length > 0 ? (
+                            <>
                             {/* Mobile card view */}
                             <div className="md:hidden space-y-3">
                                 {filteredMembers.map((member, idx) => (
@@ -343,6 +344,7 @@ export default function Admin({ user }: AdminProps) {
                                     </tbody>
                                 </table>
                             </div>
+                            </>
                         ) : (
                             <div className="text-center py-8">
                                 <AlertCircle className="mx-auto mb-4 text-gray-400" size={32} />
