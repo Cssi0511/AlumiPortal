@@ -241,13 +241,13 @@ export default function Admin({ user }: AdminProps) {
             </div>
 
             {/* Tab Navigation */}
-            <div className="card bg-white rounded-2xl shadow-lg overflow-hidden">
-                <div className="border-b border-gray-200 flex flex-wrap">
+            <div className="card bg-white rounded-2xl shadow-lg overflow-hidden p-0 md:p-0">
+                <div className="border-b border-gray-200 flex overflow-x-auto hide-scrollbar">
                     {availableTabs.map(tab => (
                         <button
                             key={tab}
                             onClick={() => setActiveTab(tab)}
-                            className={`flex-1 px-6 py-4 text-sm font-black uppercase text-center transition-all border-b-2 ${
+                            className={`whitespace-nowrap flex-1 px-4 md:px-6 py-4 text-xs md:text-sm font-black uppercase text-center transition-all border-b-2 ${
                                 activeTab === tab 
                                     ? 'border-[#1e3a8a] text-[#1e3a8a] bg-blue-50' 
                                     : 'border-transparent text-gray-600 hover:text-gray-900'
@@ -263,7 +263,7 @@ export default function Admin({ user }: AdminProps) {
 
                 {/* Overview Tab */}
                 {activeTab === 'overview' && (
-                    <div className="p-8">
+                    <div className="p-4 md:p-8">
                         <div className="mb-6">
                             <input
                                 type="text"
@@ -279,7 +279,32 @@ export default function Admin({ user }: AdminProps) {
                                 <div className="w-8 h-8 border-2 border-gray-200 border-t-[#1e3a8a] rounded-full animate-spin" />
                             </div>
                         ) : filteredMembers.length > 0 ? (
-                            <div className="overflow-x-auto">
+                            {/* Mobile card view */}
+                            <div className="md:hidden space-y-3">
+                                {filteredMembers.map((member, idx) => (
+                                    <div key={idx} className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                                        <div className="flex justify-between items-start mb-2">
+                                            <div>
+                                                <p className="font-black text-[#1e3a8a] text-sm">{member.fullName}</p>
+                                                <p className="text-[11px] text-gray-500 font-bold">{member.memberId}</p>
+                                            </div>
+                                            <span className={`px-2 py-1 rounded-full text-[10px] font-bold ${member.verification ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                                                {member.verification ? 'Verified' : 'Pending'}
+                                            </span>
+                                        </div>
+                                        <p className="text-xs text-gray-500 truncate mb-1">{member.email}</p>
+                                        <p className="text-xs text-gray-500 truncate mb-3">{member.companyOrganization}</p>
+                                        <button
+                                            onClick={() => setViewMemberModal(member)}
+                                            className="w-full py-2 bg-blue-100 text-blue-700 rounded-lg text-xs font-bold hover:bg-blue-200 transition-colors"
+                                        >
+                                            View Details
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                            {/* Desktop table view */}
+                            <div className="hidden md:block overflow-x-auto">
                                 <table className="w-full">
                                     <thead className="bg-gray-50 border-b border-gray-200">
                                         <tr>
@@ -329,7 +354,7 @@ export default function Admin({ user }: AdminProps) {
 
                 {/* Manage Dues Tab */}
                 {activeTab === 'dues' && (
-                    <div className="p-8">
+                    <div className="p-4 md:p-8">
                         <div className="mb-6">
                             <input
                                 type="text"
@@ -375,7 +400,7 @@ export default function Admin({ user }: AdminProps) {
 
                 {/* Verify Users Tab */}
                 {activeTab === 'verify' && (
-                    <div className="p-8">
+                    <div className="p-4 md:p-8">
                         <div className="mb-6">
                             <input
                                 type="text"
@@ -454,8 +479,8 @@ export default function Admin({ user }: AdminProps) {
 
                 {/* Send Notifications Tab */}
                 {activeTab === 'notifications' && (
-                    <div className="p-8">
-                        <div className="mb-6">
+                    <div className="p-4 md:p-8">
+                        <div className="max-w-2xl mx-auto space-y-6">
                             <button
                                 onClick={() => {
                                     setNotificationForm({ type: 'bulk', subject: '', message: '', selectedMembers: [] })
@@ -466,9 +491,7 @@ export default function Admin({ user }: AdminProps) {
                                 <Mail size={18} />
                                 Send Bulk Notification
                             </button>
-                        </div>
 
-                        <div className="mb-6">
                             <input
                                 type="text"
                                 placeholder="Search member to send individual notification..."
@@ -483,13 +506,13 @@ export default function Admin({ user }: AdminProps) {
                                 <div className="w-8 h-8 border-2 border-gray-200 border-t-[#1e3a8a] rounded-full animate-spin" />
                             </div>
                         ) : filteredMembers.length > 0 ? (
-                            <div className="grid gap-4">
+                            <div className="grid gap-4 max-w-2xl mx-auto">
                                 {filteredMembers.map((member, idx) => (
                                     <div key={idx} className="p-4 border border-gray-200 rounded-xl hover:shadow-md transition-all">
-                                        <div className="flex items-center justify-between">
-                                            <div>
-                                                <h4 className="font-bold text-gray-800">{member.fullName}</h4>
-                                                <p className="text-sm text-gray-600">{member.email}</p>
+                                        <div className="flex items-center justify-between gap-2">
+                                            <div className="min-w-0">
+                                                <h4 className="font-bold text-gray-800 truncate">{member.fullName}</h4>
+                                                <p className="text-sm text-gray-600 truncate">{member.email}</p>
                                             </div>
                                             <button
                                                 onClick={() => {
@@ -497,7 +520,7 @@ export default function Admin({ user }: AdminProps) {
                                                     setNotificationForm({ type: 'single', subject: '', message: '', selectedMembers: [] })
                                                     setShowNotificationModal(true)
                                                 }}
-                                                className="flex items-center gap-2 px-4 py-2 bg-[#1e3a8a] hover:bg-[#0a1628] text-white rounded-lg font-bold text-sm transition-all"
+                                                className="shrink-0 flex items-center gap-2 px-4 py-2 bg-[#1e3a8a] hover:bg-[#0a1628] text-white rounded-lg font-bold text-sm transition-all"
                                             >
                                                 <Mail size={16} />
                                                 Send

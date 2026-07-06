@@ -35,13 +35,13 @@ export default function Profile({ user, onUpdate }: ProfileProps) {
     }
 
     return (
-        <div className="space-y-8 max-w-4xl mx-auto">
-            <div className="flex justify-between items-center bg-white p-6 rounded-3xl shadow-md border border-gray-100">
-                <h2 className="text-2xl font-black text-[#0a1628] uppercase tracking-tight">Your Profile</h2>
+        <div className="space-y-6 max-w-4xl mx-auto">
+            <div className="flex flex-wrap gap-3 justify-between items-center bg-white p-4 md:p-6 rounded-3xl shadow-md border border-gray-100">
+                <h2 className="text-xl md:text-2xl font-black text-[#0a1628] uppercase tracking-tight">Your Profile</h2>
                 {!isEditing ? (
                     <button
                         onClick={() => setIsEditing(true)}
-                        className="flex items-center gap-2 text-sm font-bold uppercase text-[#1e3a8a] bg-blue-50 px-6 py-2 rounded-xl hover:bg-blue-100 transition-all shadow-sm"
+                        className="flex items-center gap-2 text-sm font-bold uppercase text-[#1e3a8a] bg-blue-50 px-5 py-2 rounded-xl hover:bg-blue-100 transition-all shadow-sm"
                     >
                         <Edit2 size={16} />
                         Edit Profile
@@ -50,14 +50,14 @@ export default function Profile({ user, onUpdate }: ProfileProps) {
                     <div className="flex gap-2">
                         <button
                             onClick={() => setIsEditing(false)}
-                            className="px-6 py-2 rounded-xl text-sm font-bold uppercase text-gray-500 hover:bg-gray-100 transition-all"
+                            className="px-4 md:px-6 py-2 rounded-xl text-sm font-bold uppercase text-gray-500 hover:bg-gray-100 transition-all"
                         >
                             Cancel
                         </button>
                         <button
                             onClick={handleSave}
                             disabled={loading}
-                            className="flex items-center gap-2 text-sm font-bold uppercase text-white bg-green-600 px-6 py-2 rounded-xl hover:bg-green-700 transition-all shadow-md disabled:opacity-50"
+                            className="flex items-center gap-2 text-sm font-bold uppercase text-white bg-green-600 px-4 md:px-6 py-2 rounded-xl hover:bg-green-700 transition-all shadow-md disabled:opacity-50"
                         >
                             <Save size={16} />
                             {loading ? 'Saving...' : 'Save Changes'}
@@ -73,13 +73,13 @@ export default function Profile({ user, onUpdate }: ProfileProps) {
                 </div>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="md:col-span-1 space-y-6">
-                    <div className="card text-center py-10 flex flex-col items-center flex-1">
-                        <div className="w-32 h-32 rounded-full bg-gradient-to-br from-[#d4a574] to-[#b8860b] flex items-center justify-center font-black text-5xl text-white shadow-2xl mb-6 ring-8 ring-blue-50">
+                    <div className="card text-center py-8 md:py-10 flex flex-col items-center flex-1">
+                        <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-gradient-to-br from-[#d4a574] to-[#b8860b] flex items-center justify-center font-black text-4xl md:text-5xl text-white shadow-2xl mb-4 md:mb-6 ring-8 ring-blue-50">
                             {user.fullName?.[0] || 'A'}
                         </div>
-                        <h3 className="text-xl font-black text-[#0a1628] uppercase">{user.fullName}</h3>
+                        <h3 className="text-lg md:text-xl font-black text-[#0a1628] uppercase">{user.fullName}</h3>
                         <p className="text-gray-500 font-['Crimson_Pro'] italic mb-4">{user.currentOccupation || 'Member'}</p>
                         <div className="bg-blue-50 text-[#1e3a8a] px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest border border-blue-100">
                             {user.memberId}

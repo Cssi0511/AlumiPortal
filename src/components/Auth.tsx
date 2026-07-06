@@ -152,19 +152,19 @@ export default function Auth({ onLogin }: AuthProps) {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-[#f0f0f0] to-[#e5e7eb]">
-            <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-3xl shadow-2xl border border-gray-100 relative overflow-hidden">
+        <div className="min-h-screen flex items-center justify-center py-6 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-[#f0f0f0] to-[#e5e7eb]">
+            <div className="max-w-md w-full space-y-6 bg-white p-6 sm:p-8 rounded-3xl shadow-2xl border border-gray-100 relative overflow-hidden">
                 {/* Background Accent */}
                 <div className="absolute top-0 right-0 w-32 h-32 bg-[#1e3a8a]/5 rounded-bl-full -mr-10 -mt-10" />
 
-                <div className="text-center relative z-10 space-y-4">
+                <div className="text-center relative z-10 space-y-3">
                     <div className="bg-white p-3 rounded-2xl shadow-md inline-block mx-auto border border-gray-50">
-                        <img src={logo} alt="CSSI Logo" className="w-16 h-16 object-contain" />
+                        <img src={logo} alt="CSSI Logo" className="w-14 h-14 sm:w-16 sm:h-16 object-contain" />
                     </div>
-                    <h2 className="text-4xl font-extrabold text-[#0a1628] uppercase tracking-tighter">
+                    <h2 className="text-3xl sm:text-4xl font-extrabold text-[#0a1628] uppercase tracking-tighter">
                         CSSI <span className="text-[#1e3a8a]">Alumni</span>
                     </h2>
-                    <p className="mt-2 text-sm text-[#6b7280] font-['Crimson_Pro'] italic text-lg">
+                    <p className="text-sm text-[#6b7280] font-['Crimson_Pro'] italic text-base sm:text-lg">
                         Connect. Network. Grow Together.
                     </p>
                 </div>

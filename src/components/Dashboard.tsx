@@ -98,22 +98,22 @@ export default function Dashboard({ user, onNavigate }: DashboardProps) {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
                 {stats.map((stat, index) => (
                     <motion.div
                         key={stat.label}
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: index * 0.1 }}
-                        className="card group hover:border-[#1e3a8a]/30"
+                        className="card group hover:border-[#1e3a8a]/30 p-6 md:p-8"
                     >
                         <div className="flex items-center gap-4">
-                            <div className={`p-4 rounded-2xl ${stat.bg} ${stat.color} transition-transform group-hover:scale-110`}>
-                                <stat.icon size={28} />
+                            <div className={`p-3 md:p-4 rounded-2xl ${stat.bg} ${stat.color} transition-transform group-hover:scale-110`}>
+                                <stat.icon size={24} className="md:w-7 md:h-7" />
                             </div>
                             <div>
-                                <p className="text-xs font-black uppercase tracking-widest text-gray-400">{stat.label}</p>
-                                <p className="text-4xl font-black text-[#0a1628] mt-1">{stat.value}</p>
+                                <p className="text-[10px] md:text-xs font-black uppercase tracking-widest text-gray-400">{stat.label}</p>
+                                <p className="text-2xl md:text-4xl font-black text-[#0a1628] mt-0.5 md:mt-1">{stat.value}</p>
                             </div>
                         </div>
                     </motion.div>
@@ -222,27 +222,27 @@ export default function Dashboard({ user, onNavigate }: DashboardProps) {
                         <span className="text-gray-400 font-bold uppercase tracking-widest text-xs">Loading financial data...</span>
                     </div>
                 ) : dues ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                        <div className="space-y-1">
-                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Total Paid</p>
-                            <p className="text-2xl font-black text-[#1e3a8a]">₦{dues?.totalAmountPaid?.toLocaleString()}</p>
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
+                        <div className="space-y-1 bg-gray-50 md:bg-transparent p-3 md:p-0 rounded-xl md:rounded-none">
+                            <p className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest">Total Paid</p>
+                            <p className="text-xl md:text-2xl font-black text-[#1e3a8a]">₦{dues?.totalAmountPaid?.toLocaleString()}</p>
                         </div>
-                        <div className="space-y-1">
-                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Outstanding</p>
-                            <p className={`text-2xl font-black ${dues.outstanding > 0 ? 'text-red-500' : 'text-green-500'}`}>
+                        <div className="space-y-1 bg-gray-50 md:bg-transparent p-3 md:p-0 rounded-xl md:rounded-none">
+                            <p className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest">Outstanding</p>
+                            <p className={`text-xl md:text-2xl font-black ${dues.outstanding > 0 ? 'text-red-500' : 'text-green-500'}`}>
                                 ₦{dues?.outstanding?.toLocaleString()}
                             </p>
                         </div>
-                        <div className="space-y-1">
-                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Next Due Date</p>
-                            <div className="flex items-center gap-2 text-[#0a1628] font-bold">
+                        <div className="space-y-1 bg-gray-50 md:bg-transparent p-3 md:p-0 rounded-xl md:rounded-none">
+                            <p className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest">Next Due Date</p>
+                            <div className="flex items-center gap-1.5 md:gap-2 text-[#0a1628] font-bold text-sm md:text-base">
                                 <Calendar size={14} className="text-[#d4a574]" />
                                 <span>{dues.nextDueDate || 'None'}</span>
                             </div>
                         </div>
-                        <div className="space-y-1">
-                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Monthly Commitment</p>
-                            <p className="text-xl font-bold text-gray-700">₦{dues?.monthlyDue?.toLocaleString()}</p>
+                        <div className="space-y-1 bg-gray-50 md:bg-transparent p-3 md:p-0 rounded-xl md:rounded-none">
+                            <p className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest">Monthly Due</p>
+                            <p className="text-lg md:text-xl font-bold text-gray-700">₦{dues?.monthlyDue?.toLocaleString()}</p>
                         </div>
                     </div>
                 ) : (

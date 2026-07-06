@@ -64,7 +64,7 @@ function App() {
                 currentView={currentView}
                 isAdmin={canManageUsers()}
             />
-            <main className="container mx-auto px-4 py-8 max-w-7xl">
+            <main className="container mx-auto px-4 py-6 md:py-8 pb-24 md:pb-8 max-w-7xl">
                 {currentView === 'dashboard' && <Dashboard user={user} onNavigate={setCurrentView} />}
                 {currentView === 'directory' && <Directory />}
                 {currentView === 'profile' && <Profile user={user} onUpdate={setUser} />}

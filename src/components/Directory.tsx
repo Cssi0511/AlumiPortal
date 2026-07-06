@@ -146,12 +146,12 @@ export default function Directory() {
                         />
                     </div>
 
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex overflow-x-auto hide-scrollbar pb-2 -mx-2 px-2 gap-2 snap-x">
                         {CATEGORIES.map(cat => (
                             <button
                                 key={cat.id}
                                 onClick={() => setCategory(cat.id)}
-                                className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase transition-all tracking-wider ${category === cat.id
+                                className={`whitespace-nowrap px-4 py-2 rounded-xl text-[10px] font-black uppercase transition-all tracking-wider snap-start ${category === cat.id
                                     ? 'bg-[#1e3a8a] text-white shadow-lg scale-105'
                                     : 'bg-gray-50 text-gray-400 hover:bg-gray-100'
                                     }`}
