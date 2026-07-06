@@ -4,10 +4,13 @@ import Auth from './components/Auth'
 import Dashboard from './components/Dashboard'
 import Profile from './components/Profile'
 import Directory from './components/Directory'
+import Admin from './components/Admin'
+
+type ViewType = 'dashboard' | 'directory' | 'profile' | 'admin'
 
 function App() {
     const [user, setUser] = useState<any>(null)
-    const [currentView, setCurrentView] = useState<'dashboard' | 'directory' | 'profile'>('dashboard')
+    const [currentView, setCurrentView] = useState<ViewType>('dashboard')
 
     useEffect(() => {
         const savedUser = localStorage.getItem('alumni_user')
@@ -42,6 +45,12 @@ function App() {
         setUser(null)
     }
 
+    const canManageUsers = () => {
+        if (!user) return false
+        const role = String(user.role || '').toLowerCase()
+        return role === 'admin' || role === 'welfare' || role === 'finance' || user.email === 'rolaitankamal@gmail.com'
+    }
+
     if (!user) {
         return <Auth onLogin={setUser} />
     }
@@ -53,11 +62,13 @@ function App() {
                 onLogout={handleLogout}
                 onNavigate={setCurrentView}
                 currentView={currentView}
+                isAdmin={canManageUsers()}
             />
             <main className="container mx-auto px-4 py-8 max-w-7xl">
                 {currentView === 'dashboard' && <Dashboard user={user} onNavigate={setCurrentView} />}
                 {currentView === 'directory' && <Directory />}
                 {currentView === 'profile' && <Profile user={user} onUpdate={setUser} />}
+                {currentView === 'admin' && canManageUsers() && <Admin user={user} />}
             </main>
         </div>
     )

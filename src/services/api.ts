@@ -18,6 +18,8 @@ export interface AlumniMember {
     linkedinProfile: string;
     activelyInvolved: string;
     memberId: string;
+    role?: string;
+    verification?: boolean;
     // Additional fields from original form
     committeePreference?: string;
     membershipDues?: string;
@@ -154,6 +156,24 @@ export const api = {
         }
     },
 
+    async getDuesStats(): Promise<{ success: boolean; totalPaid: number; totalOutstanding: number }> {
+        try {
+            const params = new URLSearchParams({
+                action: 'getDuesStats',
+            });
+            const response = await fetch(`${API_URL}?${params.toString()}`);
+            if (!response.ok) throw new Error('Failed to fetch dues stats');
+            const data = await response.json();
+            if (data.success) {
+                return data;
+            }
+            return { success: false, totalPaid: 0, totalOutstanding: 0 };
+        } catch (error) {
+            console.error('Error fetching dues stats:', error);
+            return { success: false, totalPaid: 0, totalOutstanding: 0 };
+        }
+    },
+
     async getDues(memberId: string): Promise<DuesData | null> {
         try {
             const params = new URLSearchParams({
@@ -163,9 +183,10 @@ export const api = {
             const response = await fetch(`${API_URL}?${params.toString()}`);
             if (!response.ok) throw new Error('Failed to fetch dues');
             const data = await response.json();
-            if (data && !data.found) {
+            if (!data.found) {
                 return {
                     ...data,
+                    found: false,
                     totalAmountPaid: 0,
                     outstanding: 0,
                     monthlyDue: 0,
@@ -178,13 +199,167 @@ export const api = {
                     dues2025: {},
                     dues2026: {},
                     dues2027: {},
-                    detail: 'no current dues set up'
+                    detail: 'no account setup for this user kindly contact admin'
                 };
             }
             return data;
         } catch (error) {
             console.error('Error fetching dues:', error);
             return null;
+        }
+    },
+
+    async updateMemberDues(memberId: string, duesData: any): Promise<{ success: boolean; message: string }> {
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({
+                    action: 'updateMemberDues',
+                    memberId: memberId,
+                    duesData: duesData
+                })
+            });
+            return await response.json();
+        } catch (error) {
+            console.error('Error updating dues:', error);
+            return { success: false, message: 'Failed to update dues' };
+        }
+    },
+
+    async verifyUser(identifier: string, verified: boolean): Promise<{ success: boolean; message: string }> {
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({
+                    action: 'verifyUser',
+                    identifier: identifier,
+                    verified: verified
+                })
+            });
+            return await response.json();
+        } catch (error) {
+            console.error('Error verifying user:', error);
+            return { success: false, message: 'Failed to verify user' };
+        }
+    },
+
+    async sendNotification(recipientIds: string[], subject: string, message: string, isBulk: boolean = false): Promise<{ success: boolean; message: string }> {
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({
+                    action: 'sendNotification',
+                    recipientIds: recipientIds,
+                    subject: subject,
+                    message: message,
+                    isBulk: isBulk
+                })
+            });
+            return await response.json();
+        } catch (error) {
+            console.error('Error sending notification:', error);
+            return { success: false, message: 'Failed to send notification' };
+        }
+    },
+
+    async registerLogin(email: string, password: string): Promise<{ success: boolean; message: string }> {
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action: 'registerLogin', email, password })
+            });
+            return await response.json();
+        } catch (error) {
+            console.error('Error registering login:', error);
+            return { success: false, message: 'Failed to register login' };
+        }
+    },
+
+    async authenticateUser(email: string, password: string): Promise<{ success: boolean; message: string }> {
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action: 'authenticateUser', email, password })
+            });
+            return await response.json();
+        } catch (error) {
+            console.error('Error authenticating user:', error);
+            return { success: false, message: 'Authentication failed' };
+        }
+    },
+
+    async changePassword(email: string, oldPassword: string, newPassword: string): Promise<{ success: boolean; message: string }> {
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action: 'changePassword', email, oldPassword, newPassword })
+            });
+            return await response.json();
+        } catch (error) {
+            console.error('Error changing password:', error);
+            return { success: false, message: 'Failed to change password' };
+        }
+    },
+
+    async checkLoginStatus(email: string): Promise<{ success: boolean; exists: boolean; loginSetup: boolean; message: string }> {
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action: 'checkLoginStatus', email })
+            });
+            return await response.json();
+        } catch (error) {
+            console.error('Error checking login status:', error);
+            return { success: false, exists: false, loginSetup: false, message: 'Failed to check login status' };
+        }
+    },
+
+    async sendOTP(email: string): Promise<{ success: boolean; message: string }> {
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action: 'sendOTP', email })
+            });
+            return await response.json();
+        } catch (error) {
+            console.error('Error sending OTP:', error);
+            return { success: false, message: 'Failed to send OTP' };
+        }
+    },
+
+    async setupPasswordWithOTP(email: string, otp: string, newPassword: string): Promise<{ success: boolean; message: string }> {
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action: 'setupPasswordWithOTP', email, otp, newPassword })
+            });
+            return await response.json();
+        } catch (error) {
+            console.error('Error setting password with OTP:', error);
+            return { success: false, message: 'Failed to set password' };
+        }
+    },
+
+    async changeRole(identifier: string, role: 'admin' | 'user' | 'finance' | 'welfare'): Promise<{ success: boolean; message: string }> {
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action: 'changeRole', identifier, role })
+            });
+            return await response.json();
+        } catch (error) {
+            console.error('Error changing role:', error);
+            return { success: false, message: 'Failed to change role' };
         }
     }
 };

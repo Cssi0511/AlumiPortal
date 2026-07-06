@@ -14,6 +14,13 @@ export default function Auth({ onLogin }: AuthProps) {
     const [error, setError] = useState('')
     const [success, setSuccess] = useState('')
 
+    // Login states
+    const [loginStep, setLoginStep] = useState<'email' | 'password' | 'otp_setup'>('email')
+    const [password, setPassword] = useState('')
+    const [otp, setOtp] = useState('')
+    const [newPassword, setNewPassword] = useState('')
+    const [confirmPassword, setConfirmPassword] = useState('')
+
     // Form states
     const [email, setEmail] = useState('')
     const [regData, setRegData] = useState({
@@ -35,16 +42,95 @@ export default function Auth({ onLogin }: AuthProps) {
         e.preventDefault()
         setLoading(true)
         setError('')
+        setSuccess('')
 
-        const user = await api.login(email)
-        console.log({ user })
-        if (user) {
-            localStorage.setItem('alumni_user', JSON.stringify(user))
-            onLogin(user)
-        } else {
-            setError('Email not found. Please check or register.')
+        try {
+            if (loginStep === 'email') {
+                const status = await api.checkLoginStatus(email)
+                if (status.success && status.exists) {
+                    if (status.loginSetup) {
+                        setLoginStep('password')
+                    } else {
+                        // Send OTP for initial password setup
+                        const otpResult = await api.sendOTP(email)
+                        if (otpResult.success) {
+                            setSuccess('An OTP has been sent to your email to set up your password.')
+                            setLoginStep('otp_setup')
+                        } else {
+                            setError(otpResult.message)
+                        }
+                    }
+                } else {
+                    setError(status.message || 'Email not registered. Please check or register.')
+                }
+            } else if (loginStep === 'password') {
+                const authResult = await api.authenticateUser(email, password)
+                if (authResult.success) {
+                    const user = await api.login(email)
+                    if (user) {
+                        localStorage.setItem('alumni_user', JSON.stringify(user))
+                        onLogin(user)
+                    } else {
+                        setError('Failed to retrieve user profile.')
+                    }
+                } else {
+                    setError(authResult.message || 'Invalid password.')
+                }
+            } else if (loginStep === 'otp_setup') {
+                if (newPassword !== confirmPassword) {
+                    setError('Passwords do not match.')
+                    setLoading(false)
+                    return
+                }
+                if (newPassword.length < 6) {
+                    setError('Password must be at least 6 characters long.')
+                    setLoading(false)
+                    return
+                }
+                const setupResult = await api.setupPasswordWithOTP(email, otp, newPassword)
+                if (setupResult.success) {
+                    setSuccess('Password set successfully! Logging in...')
+                    const user = await api.login(email)
+                    if (user) {
+                        setTimeout(() => {
+                            localStorage.setItem('alumni_user', JSON.stringify(user))
+                            onLogin(user)
+                        }, 1500)
+                    } else {
+                        setError('Failed to retrieve user profile after password setup.')
+                    }
+                } else {
+                    setError(setupResult.message || 'Verification or setup failed.')
+                }
+            }
+        } catch (err: any) {
+            console.error(err)
+            setError('An unexpected error occurred.')
+        } finally {
+            setLoading(false)
         }
-        setLoading(false)
+    }
+
+    const handleForgotPassword = async () => {
+        setLoading(true)
+        setError('')
+        setSuccess('')
+        try {
+            const otpResult = await api.sendOTP(email)
+            if (otpResult.success) {
+                setSuccess('A reset OTP has been sent to your email.')
+                setLoginStep('otp_setup')
+                setOtp('')
+                setNewPassword('')
+                setConfirmPassword('')
+            } else {
+                setError(otpResult.message)
+            }
+        } catch (err) {
+            setError('Failed to send reset OTP.')
+        } finally {
+            setLoading(false)
+        }
     }
 
     const handleRegister = async (e: React.FormEvent) => {
@@ -85,14 +171,28 @@ export default function Auth({ onLogin }: AuthProps) {
 
                 <div className="flex bg-gray-100 p-1 rounded-xl mb-8">
                     <button
-                        onClick={() => setIsLogin(true)}
+                        onClick={() => {
+                            setIsLogin(true)
+                            setLoginStep('email')
+                            setEmail('')
+                            setPassword('')
+                            setOtp('')
+                            setNewPassword('')
+                            setConfirmPassword('')
+                            setError('')
+                            setSuccess('')
+                        }}
                         className={`flex-1 py-2.5 text-sm font-bold uppercase rounded-lg transition-all ${isLogin ? 'bg-white text-[#1e3a8a] shadow-sm' : 'text-gray-500 hover:text-gray-700'
                             }`}
                     >
                         Login
                     </button>
                     <button
-                        onClick={() => setIsLogin(false)}
+                        onClick={() => {
+                            setIsLogin(false)
+                            setError('')
+                            setSuccess('')
+                        }}
                         className={`flex-1 py-2.5 text-sm font-bold uppercase rounded-lg transition-all ${!isLogin ? 'bg-white text-[#1e3a8a] shadow-sm' : 'text-gray-500 hover:text-gray-700'
                             }`}
                     >
@@ -134,29 +234,157 @@ export default function Auth({ onLogin }: AuthProps) {
                             onSubmit={handleLogin}
                             className="space-y-6"
                         >
-                            <div>
-                                <label className="block text-xs font-black text-gray-500 uppercase tracking-widest mb-2 px-1">
-                                    Email Address
-                                </label>
-                                <div className="relative">
-                                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                                    <input
-                                        type="email"
-                                        required
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        className="form-input pl-12"
-                                        placeholder="name@example.com"
-                                    />
+                            {loginStep === 'email' && (
+                                <div>
+                                    <label className="block text-xs font-black text-gray-500 uppercase tracking-widest mb-2 px-1">
+                                        Email Address
+                                    </label>
+                                    <div className="relative">
+                                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                                        <input
+                                            type="email"
+                                            required
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
+                                            className="form-input pl-12"
+                                            placeholder="name@example.com"
+                                        />
+                                    </div>
                                 </div>
-                            </div>
+                            )}
+
+                            {loginStep === 'password' && (
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className="block text-xs font-black text-gray-500 uppercase tracking-widest mb-2 px-1">
+                                            Email Address
+                                        </label>
+                                        <input
+                                            type="email"
+                                            disabled
+                                            value={email}
+                                            className="form-input pl-4 bg-gray-50 text-gray-500 cursor-not-allowed"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-black text-gray-500 uppercase tracking-widest mb-2 px-1">
+                                            Password
+                                        </label>
+                                        <input
+                                            type="password"
+                                            required
+                                            value={password}
+                                            onChange={(e) => setPassword(e.target.value)}
+                                            className="form-input pl-4"
+                                            placeholder="••••••••"
+                                        />
+                                    </div>
+                                    <div className="flex justify-between items-center text-xs px-1">
+                                        <button
+                                            type="button"
+                                            onClick={handleForgotPassword}
+                                            className="text-[#1e3a8a] font-bold hover:underline"
+                                        >
+                                            Forgot Password?
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setLoginStep('email');
+                                                setPassword('');
+                                                setError('');
+                                                setSuccess('');
+                                            }}
+                                            className="text-gray-500 hover:text-gray-700"
+                                        >
+                                            Change Email
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+
+                            {loginStep === 'otp_setup' && (
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className="block text-xs font-black text-gray-500 uppercase tracking-widest mb-2 px-1">
+                                            Email Address
+                                        </label>
+                                        <input
+                                            type="email"
+                                            disabled
+                                            value={email}
+                                            className="form-input pl-4 bg-gray-50 text-gray-500 cursor-not-allowed"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-black text-gray-500 uppercase tracking-widest mb-2 px-1">
+                                            OTP Code (sent to email)
+                                        </label>
+                                        <input
+                                            type="text"
+                                            required
+                                            value={otp}
+                                            onChange={(e) => setOtp(e.target.value)}
+                                            className="form-input pl-4"
+                                            placeholder="123456"
+                                            maxLength={6}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-black text-gray-500 uppercase tracking-widest mb-2 px-1">
+                                            New Password
+                                        </label>
+                                        <input
+                                            type="password"
+                                            required
+                                            value={newPassword}
+                                            onChange={(e) => setNewPassword(e.target.value)}
+                                            className="form-input pl-4"
+                                            placeholder="••••••••"
+                                            minLength={6}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-black text-gray-500 uppercase tracking-widest mb-2 px-1">
+                                            Confirm New Password
+                                        </label>
+                                        <input
+                                            type="password"
+                                            required
+                                            value={confirmPassword}
+                                            onChange={(e) => setConfirmPassword(e.target.value)}
+                                            className="form-input pl-4"
+                                            placeholder="••••••••"
+                                            minLength={6}
+                                        />
+                                    </div>
+                                    <div className="flex justify-end text-xs px-1">
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setLoginStep('email');
+                                                setOtp('');
+                                                setNewPassword('');
+                                                setConfirmPassword('');
+                                                setError('');
+                                                setSuccess('');
+                                            }}
+                                            className="text-gray-500 hover:text-gray-700"
+                                        >
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
 
                             <button
                                 type="submit"
                                 disabled={loading}
                                 className="btn-primary flex items-center justify-center gap-2"
                             >
-                                {loading ? 'Processing...' : 'Login to Portal'}
+                                {loading ? 'Processing...' : 
+                                    loginStep === 'email' ? 'Proceed' : 
+                                    loginStep === 'password' ? 'Login' : 'Set Password & Login'}
                             </button>
                         </motion.form>
                     ) : (

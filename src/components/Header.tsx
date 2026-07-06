@@ -1,4 +1,4 @@
-import { LogOut, LayoutDashboard, Users } from 'lucide-react'
+import { LogOut, LayoutDashboard, Users, Settings } from 'lucide-react'
 import logo from '../assets/images/logo.png'
 
 interface HeaderProps {
@@ -6,9 +6,10 @@ interface HeaderProps {
     onLogout: () => void
     onNavigate: (view: any) => void
     currentView: string
+    isAdmin?: boolean
 }
 
-export default function Header({ user, onLogout, onNavigate, currentView }: HeaderProps) {
+export default function Header({ user, onLogout, onNavigate, currentView, isAdmin }: HeaderProps) {
     return (
         <header className="bg-gradient-to-r from-[#0a1628] to-[#1e3a8a] text-white shadow-xl sticky top-0 z-50">
             <div className="container mx-auto px-4 max-w-7xl">
@@ -40,6 +41,16 @@ export default function Header({ user, onLogout, onNavigate, currentView }: Head
                                 <Users size={16} />
                                 <span className="hidden sm:inline">Directory</span>
                             </button>
+                            {isAdmin && (
+                                <button
+                                    onClick={() => onNavigate('admin')}
+                                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold uppercase transition-all ${currentView === 'admin' ? 'bg-white text-[#1e3a8a]' : 'hover:bg-white/10'
+                                        }`}
+                                >
+                                    <Settings size={16} />
+                                    <span className="hidden sm:inline">Manage User</span>
+                                </button>
+                            )}
                         </nav>
                     </div>
 
